@@ -12,33 +12,28 @@ class AuthService {
   //Sign up fonction
   Future<String?> signup(String email, String password, String name) async {
     try {
-      final response = await suabase.auth.signUp(
-        email: email,
-        password: password,
-      );
 
-      final user = response.user;
+      //final user = response.user;
+      final response = await Supabase.instance.client
+          .from('User') // Replace with your table name
+          .insert({
+        'email': email,
+        'name': name,
+        'password': password, // Note: Don't store plain passwords in production!
+        'created_at': DateTime.now().toIso8601String(),
+        // Add other fields as needed
+      })
+          .select(); // This returns the inserted record
 
-      if (user != null) {
-        // Insérer le nom dans la table "profiles"
-        final insertResponse = await suabase
-            .from('profiles')
-            .insert({
-          'id': user.id,    // utilise l'id de l'utilisateur Supabase
-          'name': name,
-          'email': email,
-        }).select();
+      debugPrint('Inserted user: ${response.toString()}');
+      final user = response;
 
-        if (response == null) {
-          return "Erreur inconnue lors de l'insertion";
-        }
-
-        return null; // succès complet
-      }
-      return "Une erreur inconnue est survenue";
+      return null;
     } on AuthException catch (e) {
+      print(e.message);
       return e.message;
     } catch (e) {
+      print(e);
       return "Error: $e";
     }
   }
@@ -46,23 +41,27 @@ class AuthService {
 
 // login function
 
-  Future<String?> login(String email, String password, String name) async {
-    try{
-      final response = await suabase.auth.signInWithPassword(
-        password: password,
-        email: email,
-      );
-      if (response.user != null) {
-        return null; //indicates sucess
-      }
-      return "An unknow error occured";
-    } on AuthException catch (e) {
-      return e.message;
-    }catch (e) {
-      return "Error:$e";
-    }
+  Future<Map<String, dynamic>?> login(String email, String password) async {
+    try {
+      final response = await suabase
+          .from('User')
+          .select()
+          .eq('email', email.trim())
+          .maybeSingle();
 
+      if (response == null) return null;
+
+      final isValid = password == response['password'];
+
+      if (!isValid) return null;
+
+      return response; // Renvoie tout l'utilisateur
+    } catch (e) {
+      return null;
+    }
   }
+
+
 
   //Function to logout
 

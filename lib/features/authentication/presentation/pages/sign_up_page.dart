@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:thermal_touch/features/authentication/presentation/widgets/snack_bar.dart';
 
 import '../providers/auth_provider.dart';
+import 'login_page.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -44,9 +45,13 @@ class _SignUpPageState extends State<SignUpPage> {
 
     if (result == null) {
       showSnackBar(context, "Signup Successful! Now turn to login");
-      Navigator.pushReplacementNamed(context, '/login');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => LoginPage()),
+      );
     } else {
       showSnackBar(context, "Signup Failed! $result");
+      print(result);
     }
   }
 

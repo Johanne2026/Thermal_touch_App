@@ -1,16 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:thermal_touch/features/home/pages/pages/Home.dart';
+
+import '../providers/auth_provider.dart';
+import '../widgets/snack_bar.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _SignUpPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _SignUpPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
+  bool isLoadin = false;
+  bool isPasswordHidden = true;
+
+//static const String adminEmail = "admin.exemple@gmail.com";
+
+  void login() async {
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+
+    if (!mounted) return;
+
+    setState(() {
+      isLoadin = true;
+    });
+
+    final user = await _authService.login(email, password);
+
+    if (user != null) {
+      final bool isAdmin = user['isAdmin'] ?? false;
+
+      setState(() {
+        isLoadin = false;
+      });
+
+      showSnackBar(context, "Log In Successful!");
+
+      if (isAdmin) {
+        Navigator.pushReplacementNamed(context, '/admin_home');
+      } else {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } else {
+      setState(() {
+        isLoadin = false;
+      });
+      showSnackBar(context, "Log In Failed! Email ou mot de passe incorrect");
+    }
+  }
+
+
 
   @override
   void dispose() {
@@ -115,8 +161,13 @@ class _SignUpPageState extends State<LoginPage> {
                     decoration: InputDecoration(
                       labelText: 'Password',
                       suffixIcon: IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.visibility)
+                          onPressed: () {
+                            setState(() {
+                              isPasswordHidden = !isPasswordHidden;
+                            });
+                          },
+                          icon: Icon( isPasswordHidden ? Icons.visibility_off :
+                            Icons.visibility)
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
@@ -125,7 +176,7 @@ class _SignUpPageState extends State<LoginPage> {
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 30.0, vertical: 12.0),
                     ),
-                    obscureText: true,
+                    obscureText: isPasswordHidden,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Veuillez entrer un mot de passe';
@@ -140,12 +191,11 @@ class _SignUpPageState extends State<LoginPage> {
                   const SizedBox(height: 32.0),
 
                   // Bouton d'inscription
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        // Traitement de l'inscription
-                      }
-                    },
+                  const SizedBox(height: 32.0),
+                  isLoadin
+                      ? Center(child: CircularProgressIndicator())
+                      : ElevatedButton(
+                    onPressed: login,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFEE826C),
                       padding: const EdgeInsets.symmetric(vertical: 16.0),

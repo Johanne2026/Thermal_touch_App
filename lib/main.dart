@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:thermal_touch/features/authentication/presentation/pages/login_page.dart';
 import 'package:thermal_touch/features/authentication/presentation/pages/sign_up_page.dart';
-import 'package:thermal_touch/features/home/pages/loader.dart';
+import 'package:thermal_touch/features/home/pages/pages/Home.dart';
+import 'package:thermal_touch/features/home/pages/pages_admin/admin_home.dart';
+import 'package:thermal_touch/features/home/pages/pages_shared/loader.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
@@ -34,8 +36,10 @@ class MyApp extends StatelessWidget {
       initialRoute: '/loader',
       routes: {
         '/loader': (context) => Loader(),
+        '/home': (context) => HomePage(),
         '/signup': (context) => SignUpPage(), // Route vers la page d'inscription
         '/login': (context) => LoginPage(),
+        '/admin_home': (context) => AdminHomePage(),
       },
     );
   }
