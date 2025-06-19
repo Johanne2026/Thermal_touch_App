@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:thermal_touch/features/home/pages/pages/ar_view_page.dart';
+import 'package:thermal_touch/features/objects_detection/pages/ar_view_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

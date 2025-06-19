@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:thermal_touch/features/expert_crud_objects/pages/create_object.dart';
+import 'package:thermal_touch/features/expert_crud_objects/pages/delete_object.dart';
+import 'package:thermal_touch/features/expert_crud_objects/pages/read_object.dart';
+import 'package:thermal_touch/features/expert_crud_objects/pages/update_object.dart';
 
 class AdminHomePage extends StatefulWidget {
   const AdminHomePage({super.key});
@@ -38,7 +42,10 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () {
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ReadObjectPage()),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFEE826C),
@@ -62,7 +69,10 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () {
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CreateObjectPage()),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFEE826C),
@@ -86,7 +96,10 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () {
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => UpdateObjectPage()),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFEE826C),
@@ -110,7 +123,10 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () {
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => DeleteObjectPage()),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFEE826C),

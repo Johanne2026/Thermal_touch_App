@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:thermal_touch/features/home/pages/pages/Home.dart';
 
 import '../providers/auth_provider.dart';
 import '../widgets/snack_bar.dart';
-import 'package:image_picker/image_picker.dart';
-
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,10 +18,20 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
-  bool isLoadin = false;
+  bool isLoading = false;
   bool isPasswordHidden = true;
 
-//static const String adminEmail = "admin.exemple@gmail.com";
+  /// Sauvegarde les infos de l'utilisateur localement
+  Future<void> _storeUserSession({
+    required String id,
+    required String email,
+    required bool isAdmin,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_id', id);
+    await prefs.setString('user_email', email);
+    await prefs.setBool('is_admin', isAdmin);
+  }
 
   void login() async {
     String email = _emailController.text.trim();
@@ -31,20 +40,25 @@ class _LoginPageState extends State<LoginPage> {
     if (!mounted) return;
 
     setState(() {
-      isLoadin = true;
+      isLoading = true;
     });
 
     final user = await _authService.login(email, password);
 
     if (user != null) {
+      final String id = user['id'];
       final bool isAdmin = user['isAdmin'] ?? false;
 
+      // Stocker localement
+      await _storeUserSession(id: id, email: email, isAdmin: isAdmin);
+
       setState(() {
-        isLoadin = false;
+        isLoading = false;
       });
 
-      showSnackBar(context, "Log In Successful!");
+      showSnackBar(context, "Connexion réussie !");
 
+      // Redirection
       if (isAdmin) {
         Navigator.pushReplacementNamed(context, '/admin_home');
       } else {
@@ -52,13 +66,11 @@ class _LoginPageState extends State<LoginPage> {
       }
     } else {
       setState(() {
-        isLoadin = false;
+        isLoading = false;
       });
-      showSnackBar(context, "Log In Failed! Email ou mot de passe incorrect");
+      showSnackBar(context, "Échec de la connexion. Vérifiez vos identifiants.");
     }
   }
-
-
 
   @override
   void dispose() {
@@ -78,18 +90,14 @@ class _LoginPageState extends State<LoginPage> {
             child: Form(
               key: _formKey,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-
                   const SizedBox(height: 20),
-
                   SizedBox(
                     width: 265,
                     height: 265,
                     child: Image.asset("assets/images/login.png"),
                   ),
-
                   const Text(
                     'Welcome back to Thermal Touch App',
                     style: TextStyle(
@@ -99,17 +107,11 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-
                   const SizedBox(height: 10.0),
-
-                  // Lien de connexion
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        'You don’t have an account ?',
-                        style: TextStyle(color: Color(0xFF000000)),
-                      ),
+                      const Text('You don’t have an account ?'),
                       const SizedBox(width: 4),
                       GestureDetector(
                         onTap: () {
@@ -125,19 +127,14 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 40.0),
 
-
-                  // Champ Email
-                  const SizedBox(),
                   TextFormField(
                     controller: _emailController,
                     decoration: InputDecoration(
                       labelText: 'Email',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
-                        borderSide: const BorderSide(color: Color(0xFFD1D1D1)),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 30.0, vertical: 12.0),
@@ -153,32 +150,28 @@ class _LoginPageState extends State<LoginPage> {
                       return null;
                     },
                   ),
-
                   const SizedBox(height: 20.0),
-
-                  // Champ Mot de passe
-                  const SizedBox(height: 8.0),
                   TextFormField(
                     controller: _passwordController,
+                    obscureText: isPasswordHidden,
                     decoration: InputDecoration(
                       labelText: 'Password',
                       suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              isPasswordHidden = !isPasswordHidden;
-                            });
-                          },
-                          icon: Icon( isPasswordHidden ? Icons.visibility_off :
-                            Icons.visibility)
+                        onPressed: () {
+                          setState(() {
+                            isPasswordHidden = !isPasswordHidden;
+                          });
+                        },
+                        icon: Icon(
+                          isPasswordHidden ? Icons.visibility_off : Icons.visibility,
+                        ),
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
-                        borderSide: const BorderSide(color: Color(0xFFD1D1D1)),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 30.0, vertical: 12.0),
                     ),
-                    obscureText: isPasswordHidden,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Veuillez entrer un mot de passe';
@@ -189,13 +182,9 @@ class _LoginPageState extends State<LoginPage> {
                       return null;
                     },
                   ),
-
                   const SizedBox(height: 32.0),
-
-                  // Bouton d'inscription
-                  const SizedBox(height: 32.0),
-                  isLoadin
-                      ? Center(child: CircularProgressIndicator())
+                  isLoading
+                      ? const Center(child: CircularProgressIndicator())
                       : ElevatedButton(
                     onPressed: login,
                     style: ElevatedButton.styleFrom(
