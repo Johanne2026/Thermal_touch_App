@@ -4,6 +4,8 @@ import 'package:thermal_touch/features/home/pages/pages/Home.dart';
 
 import '../providers/auth_provider.dart';
 import '../widgets/snack_bar.dart';
+import 'package:image_picker/image_picker.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

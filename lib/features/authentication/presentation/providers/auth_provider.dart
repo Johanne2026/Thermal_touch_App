@@ -57,6 +57,8 @@ class AuthService {
 
       return response; // Renvoie tout l'utilisateur
     } catch (e) {
+      print('------------------');
+      print(e);
       return null;
     }
   }

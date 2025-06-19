@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:thermal_touch/features/home/pages/pages/ar_view_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
-
-
 }
-
 
 class _HomePageState extends State<HomePage> {
   @override
-  Widget build(BuildContext Context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF3E9E9),
       body: Center(
@@ -31,29 +29,32 @@ class _HomePageState extends State<HomePage> {
                 ),
                 textAlign: TextAlign.center,
               ),
-
-              const SizedBox(height: 20),
-
-              const SizedBox(height: 32.0),
-              ElevatedButton(
-                onPressed: (b),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFEE826C),
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+              const SizedBox(height: 40.0),
+              SizedBox(
+                width: 350,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ARViewPage()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFEE826C),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
                   ),
-                ),
-                child: const Text(
-                  'Scanner mon environnement',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16.0,
+                  child: const Text(
+                    'Scanner mon environnement',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16.0,
+                    ),
                   ),
                 ),
               ),
-
-
             ],
           ),
         ),

@@ -7,7 +7,9 @@ import 'package:thermal_touch/features/home/pages/pages_admin/admin_home.dart';
 import 'package:thermal_touch/features/home/pages/pages_shared/loader.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+
 Future<void> main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await dotenv.load(fileName: ".env");
