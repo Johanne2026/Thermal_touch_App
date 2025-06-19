@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:thermal_touch/features/authentication/presentation/pages/login_page.dart';
 import 'package:thermal_touch/features/objects_detection/pages/ar_view_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -9,9 +11,34 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final supabase = Supabase.instance.client;
+
+  Future<void> _logout() async {
+    await supabase.auth.signOut();
+
+    if (mounted) {
+      // Redirection vers LoginPage sans retour arrière
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => LoginPage()),
+            (route) => false,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFF3E9E9),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Déconnexion',
+            onPressed: _logout,
+          ),
+        ],
+      ),
       backgroundColor: const Color(0xFFF3E9E9),
       body: Center(
         child: SizedBox(

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:thermal_touch/features/authentication/presentation/pages/login_page.dart';
 import 'package:thermal_touch/features/expert_crud_objects/pages/create_object.dart';
 import 'package:thermal_touch/features/expert_crud_objects/pages/delete_object.dart';
 import 'package:thermal_touch/features/expert_crud_objects/pages/read_object.dart';
@@ -9,20 +11,41 @@ class AdminHomePage extends StatefulWidget {
 
   @override
   State<AdminHomePage> createState() => _AdminHomePageState();
-
-
 }
 
-
 class _AdminHomePageState extends State<AdminHomePage> {
+  final supabase = Supabase.instance.client;
+
+  Future<void> _logout() async {
+    await supabase.auth.signOut();
+
+    if (mounted) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginPage()),
+            (route) => false,
+      );
+    }
+  }
+
   @override
-  Widget build(BuildContext Context) {
+  Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFF3E9E9),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Se déconnecter',
+            onPressed: _logout,
+          ),
+        ],
+      ),
       backgroundColor: const Color(0xFFF3E9E9),
       body: Center(
         child: SizedBox(
-          width: 500,
-          height: 500,
+          width: 400,
+          height: 400,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -35,117 +58,62 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 ),
                 textAlign: TextAlign.center,
               ),
-
               const SizedBox(height: 40.0),
-              SizedBox(
-                width: 350,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ReadObjectPage()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFEE826C),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: const Text(
-                    'Voir les modes d\'emploi existants',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16.0,
-                    ),
-                  ),
+              _buildButton(
+                label: "Voir les modes d'emploi existants",
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ReadObjectPage()),
                 ),
               ),
-
               const SizedBox(height: 40.0),
-              SizedBox(
-                width: 350,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CreateObjectPage()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFEE826C),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: const Text(
-                    'Créer un mode d\'emploi',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16.0,
-                    ),
-                  ),
+              _buildButton(
+                label: "Créer un mode d'emploi",
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CreateObjectPage()),
                 ),
               ),
-
               const SizedBox(height: 40.0),
-              SizedBox(
-                width: 350,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => UpdateObjectPage()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFEE826C),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: const Text(
-                    'Mettre à jour un mode d\'emploi',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16.0,
-                    ),
-                  ),
+              _buildButton(
+                label: "Mettre à jour un mode d'emploi",
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UpdateObjectPage()),
                 ),
               ),
-
               const SizedBox(height: 40.0),
-              SizedBox(
-                width: 350,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => DeleteObjectPage()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFEE826C),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: const Text(
-                    'Supprimer un mode d\'emploi',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16.0,
-                    ),
-                  ),
+              _buildButton(
+                label: "Supprimer un mode d'emploi",
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => DeleteObjectPage()),
                 ),
               ),
-
-
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildButton({required String label, required VoidCallback onPressed}) {
+    return SizedBox(
+      width: 350,
+      height: 50,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFEE826C),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 16.0,
           ),
         ),
       ),
